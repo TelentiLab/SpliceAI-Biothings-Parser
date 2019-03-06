@@ -4,7 +4,7 @@
         "url" : "https://www.cell.com/cell/fulltext/S0092-8674(18)31629-5"
     },
     "dumper" : {
-        "data_url" : "http://localhost:8080/data/whole_genome_filtered_spliceai_scores.sample.vcf.gz",
+        "data_url" : "http://localhost:8080/data/whole_genome_filtered_spliceai_scores.vcf.gz",
         "uncompress" : true
     },
     "uploader" : {
