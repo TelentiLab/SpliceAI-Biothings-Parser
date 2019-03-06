@@ -34,15 +34,16 @@ This repo stems from the [biothings-data-parser-sample](https://github.com/Telen
                     "score": 0.0000,
                     "position": -24
                 }          
-            },
-            {
-              // more data ...
             }
         ]
     }
 }
 ```
 
+`data` field was parsed to a list to handle variants on same position but affecting different genes.
+
+Raw data INFO field annotation:
+```
 SYMBOL,Type=String,Description="HGNC gene symbol"
 STRAND,Type=String,Description="+ or - depending on whether the gene lies in the positive or negative strand">
 TYPE,Number=1,Type=String,Description="E or I depending on whether the variant position is exonic or intronic (GENCODE V24lift37 canonical annotation)">
@@ -55,3 +56,4 @@ DP_AG,Number=1,Type=Integer,Description="Delta position (acceptor gain) relative
 DP_AL,Number=1,Type=Integer,Description="Delta position (acceptor loss) relative to the variant position">
 DP_DG,Number=1,Type=Integer,Description="Delta position (donor gain) relative to the variant position">
 DP_DL,Number=1,Type=Integer,Description="Delta position (donor loss) relative to the variant position">
+```
