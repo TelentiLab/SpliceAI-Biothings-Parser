@@ -5,11 +5,11 @@ FILE_NOT_FOUND_ERROR = 'Cannot find input file: {}'   # error message constant
 
 # configure logger
 logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', level=logging.INFO)
-_logger = logging.getLogger('biothings_parser')
+_logger = logging.getLogger('SpliceAI')
 
 # change following parameters accordingly
-SOURCE_NAME = 'my_data_source'   # source name that appears in the api response
-FILENAME = 'sample_data.tsv'   # name of the file to read
+SOURCE_NAME = 'splice_ai'   # source name that appears in the api response
+FILENAME = 'whole_genome_filtered_spliceai_scores.vcf'   # name of the file to read
 DELIMITER = '\t'    # the delimiter that separates each field
 
 
@@ -51,30 +51,78 @@ def load_data(data_folder: str):
                 continue  # skip commented/empty lines
 
             try:
-                chrom, start, end, percentile = line.strip().split(DELIMITER)   # unpack according to schema
+                # unpack according to schema
+                chrom, pos, _id, ref, alt, qual, _filter, info = line.strip().split(DELIMITER)
             except ValueError:
                 _logger.error(f'failed to unpack line {count}: {line}')
                 _logger.error(f'got: {line.strip().split(DELIMITER)}')
                 skipped.append(line)
                 continue  # skip error line
 
+            try:
+                """
+                Unpack info to retrieve scores.
+                Sample info record:
+                SYMBOL=TUBB8;STRAND=-;TYPE=E;DIST=-4;DS_AG=0.1391;DS_AL=0.0000;DS_DG=0.0000;DS_DL=0.0000;DP_AG=-1;DP_AL=1;DP_DG=-1;DP_DL=28
+                """
+                [symbol, strand, _type, distance,
+                 ds_ag, ds_al, ds_dg, ds_dl,
+                 dp_ag, dp_al, dp_dg, dp_dl] = [each.split('=')[1] for each in info.strip().split(';')]
+            except ValueError:
+                _logger.error(f'failed to unpack info: {info}')
+                _logger.error(f'got: {info.strip().split(";")}')
+                skipped.append(line)
+                continue  # skip error line
+
             try:    # parse each field if necessary (format, enforce datatype etc.)
-                chrom = chrom.replace('chr', '')
-                start = int(start)
-                end = int(end)
-                percentile = float(percentile)
+                pos = int(pos)
+                pos_strand = strand == '+'
+                is_exon = _type == 'E'
+                distance = int(distance)
+                ds_ag = float(ds_ag)
+                ds_al = float(ds_al)
+                ds_dg = float(ds_dg)
+                ds_dl = float(ds_dl)
+                dp_ag = int(dp_ag)
+                dp_al = int(dp_al)
+                dp_dg = int(dp_dg)
+                dp_dl = int(dp_dl)
             except ValueError as e:
                 _logger.error(f'failed to cast type for line {count}: {e}')
                 skipped.append(line)
                 continue  # skip error line
 
-            _id = f'chr{chrom}:g.{start}_{end}'  # define id
+            _id = f'chr{chrom}:g.{pos}{ref}>{alt}'  # define id
 
             variant = {
                 'chrom': chrom,
-                'start': start,
-                'end': end,
-                'percentile': percentile,
+                'pos': pos,
+                'ref': ref,
+                'alt': alt,
+                'data': [
+                    {
+                        'hgnc_gene': symbol,
+                        'pos_strand': pos_strand,
+                        'is_exon': is_exon,
+                        'distance': distance,
+                        'acceptor_gain': {
+                            'score': ds_ag,
+                            'position': dp_ag,
+                        },
+                        'acceptor_loss': {
+                            'score': ds_al,
+                            'position': dp_al,
+                        },
+                        'donor_gain': {
+                            'score': ds_dg,
+                            'position': dp_dg,
+                        },
+                        'donor_loss': {
+                            'score': ds_dl,
+                            'position': dp_dl,
+                        },
+                    },
+                ],
             }
 
             yield {  # commit an entry by yielding

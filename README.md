@@ -1,75 +1,55 @@
 # Introduction
 
-This is a sample data parser for [Biothings Studio](http://docs.biothings.io/en/latest/doc/studio.html). This repo does not contain any information regarding [Biothings Studio](http://docs.biothings.io/en/latest/doc/studio.html), please refer to the original link if you need more information on Biothings Studio. It is highly recommended that you go through the [tutorials](http://docs.biothings.io/en/latest/doc/studio_tutorial.html) and [developer guide](http://docs.biothings.io/en/latest/doc/studio_guide.html) in Biothings Studio page first.
+This repo stems from the [biothings-data-parser-sample](https://github.com/TelentiLab/biothings-data-parser-sample) code, and is used to parse SpliceAI data for Biothings Studio. A small sample dataset is also provided.
 
-# Usage
+## Sample Entry
 
-## Installation
-
-This Python project uses [**pipenv**](https://pipenv.readthedocs.io/en/latest/) to manage virtual environment.
-
-To install **pipenv**:
-
-```bash
-pip install pipenv
+```json
+{
+    "_id": "chr10:g.13655739A>C",
+    "splice_ai": {
+        "chrom": "10",
+        "pos": 13655739,
+        "ref": "A",
+        "alt": "C",
+        "data": [
+            {
+                "hgnc_gene": "PRPF18",
+                "pos_strand": true,
+                "is_exon": false,
+                "distance": 2,
+                "acceptor_gain": {
+                    "score": 0.6048,
+                    "position": 27
+                },
+                "acceptor_loss": {
+                    "score": 0.9898,
+                    "position": 2
+                },
+                "donor_gain": {
+                    "score": 0.0001,
+                    "position": 21
+                },
+                "donor_loss": {
+                    "score": 0.0000,
+                    "position": -24
+                }          
+            },
+            ...
+        ]
+    }
+}
 ```
 
-To create project virtual environment, along with the dependencies:
-
-```bash
-pipenv install
-``` 
-
-Hint: make sure you have Python `3.6` installed.
-
-Once you have set up the virtual environment, you are ready to go. You can tailor the code to your need. Refer to the next section on how to do that.
-
-# Explanation
-
-## High Level Ideas
- 
-We defined a method, `load_data()` in `parser.py`, specified in `manifest.json` file to be the parser for **Biothings Studio**. `parser.load_data()` returns a generator that yields one record at a time, which will be used by **Biothings Studio**.
-
-## Details
-
-These are the files you need to walk through if you want to customize your own parser.
-
-### `manifest.json`
-
-Defines data download (dumper) and parsing (uploader) logic as well as metadata. More details covered in **Biothings Studio** tutorials.
-
-### `parser.py`
-
-Below is the workflow. Customize it to your demand.
-
-1. Define data file name, delimiter and source name:
-
-    - `FILENAME`: filename does not include the path.
-    - `DELIMITER`: what you used to separate fields in the data file. For example, `,` in a `.csv` file or `\t` in a `.tsv` file.
-    - `SOURCE_NAME`: the key name to be shown in the API response for your data. For example:
-    
-    ```
-    {
-        _id: ...,
-        my_data_source: {
-            ...,    # some data
-        }
-    }
-    ```
-
-1. Check if file exists in path.
-
-1. Inspect file to get the total number of lines. (optional but recommended for logging purpose so that we can indicate progress in the following steps)
-
-1. Read file:
-    - Skip commented lines and empty lines
-    - Split line according to schema. Skip the line when split fails, record to `skipped` list.
-    - Format and enforce data type for each fields. Skip the line when cast fails, record to `skipped` list.
-    - Construct an entry and yield it.
-    - Output all skipped lines (`skipped` list) to log after finished.
-
-### sample.tsv
-
-A sample file provided for testing purpose.
-
-
+SYMBOL,Type=String,Description="HGNC gene symbol"
+STRAND,Type=String,Description="+ or - depending on whether the gene lies in the positive or negative strand">
+TYPE,Number=1,Type=String,Description="E or I depending on whether the variant position is exonic or intronic (GENCODE V24lift37 canonical annotation)">
+DIST,Number=1,Type=Integer,Description="Distance between the variant position and the closest splice site (GENCODE V24lift37 canonical annotation)">
+DS_AG,Number=1,Type=Float,Description="Delta score (acceptor gain)">
+DS_AL,Number=1,Type=Float,Description="Delta score (acceptor loss)">
+DS_DG,Number=1,Type=Float,Description="Delta score (donor gain)">
+DS_DL,Number=1,Type=Float,Description="Delta score (donor loss)">
+DP_AG,Number=1,Type=Integer,Description="Delta position (acceptor gain) relative to the variant position">
+DP_AL,Number=1,Type=Integer,Description="Delta position (acceptor loss) relative to the variant position">
+DP_DG,Number=1,Type=Integer,Description="Delta position (donor gain) relative to the variant position">
+DP_DL,Number=1,Type=Integer,Description="Delta position (donor loss) relative to the variant position">
