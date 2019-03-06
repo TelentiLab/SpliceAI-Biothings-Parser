@@ -77,7 +77,7 @@ def load_data(data_folder: str):
             try:    # parse each field if necessary (format, enforce datatype etc.)
                 pos = int(pos)
                 pos_strand = strand == '+'
-                is_exon = _type == 'E'
+                exonic = _type == 'E'
                 distance = int(distance)
                 ds_ag = float(ds_ag)
                 ds_al = float(ds_al)
@@ -103,7 +103,7 @@ def load_data(data_folder: str):
                     {
                         'hgnc_gene': symbol,
                         'pos_strand': pos_strand,
-                        'is_exon': is_exon,
+                        'exonic': exonic,
                         'distance': distance,
                         'acceptor_gain': {
                             'score': ds_ag,

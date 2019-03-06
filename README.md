@@ -16,7 +16,7 @@ This repo stems from the [biothings-data-parser-sample](https://github.com/Telen
             {
                 "hgnc_gene": "PRPF18",
                 "pos_strand": true,
-                "is_exon": false,
+                "exonic": false,
                 "distance": 2,
                 "acceptor_gain": {
                     "score": 0.6048,
@@ -35,7 +35,9 @@ This repo stems from the [biothings-data-parser-sample](https://github.com/Telen
                     "position": -24
                 }          
             },
-            ...
+            {
+              // more data ...
+            }
         ]
     }
 }
