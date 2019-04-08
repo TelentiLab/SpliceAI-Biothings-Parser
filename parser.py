@@ -1,5 +1,7 @@
 import logging
 import os
+import time
+import datetime
 
 FILE_NOT_FOUND_ERROR = 'Cannot find input file: {}'   # error message constant
 
@@ -39,12 +41,16 @@ def load_data(data_folder: str):
     file_lines = _inspect_file(input_file)  # get total lines so that we can indicate progress in next step
 
     with open(input_file, 'r') as file:
+        start_time = time.time()
         _logger.info(f'start reading file: {FILENAME}')
         count = 0
         skipped = []
         for line in file:
             count += 1
-            _logger.info(f'reading line {count} ({(count / file_lines * 100):.2f}%)')  # format to use 2 decimals
+            ratio = count / file_lines
+            time_left = datetime.timedelta(seconds=(time.time() - start_time) * (1 - ratio) / ratio)
+            # format to use 2 decimals for progress
+            _logger.info(f'reading line {count} ({(count / file_lines * 100):.2f}%), estimated time left: {time_left}')
 
             if line.startswith('#') or line.strip() == '':
                 skipped.append(line)
@@ -99,7 +105,7 @@ def load_data(data_folder: str):
                 'pos': pos,
                 'ref': ref,
                 'alt': alt,
-                'data': [
+                'scores': [
                     {
                         'hgnc_gene': symbol,
                         'pos_strand': pos_strand,
