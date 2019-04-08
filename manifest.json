@@ -5,7 +5,8 @@
     },
     "dumper" : {
         "data_url" : "http://localhost:8080/data/whole_genome_filtered_spliceai_scores.vcf.gz",
-        "uncompress" : true
+        "uncompress" : true,
+        "release": "parser:version"
     },
     "uploader" : {
         "parser" : "parser:load_data",

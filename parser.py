@@ -7,12 +7,20 @@ FILE_NOT_FOUND_ERROR = 'Cannot find input file: {}'   # error message constant
 
 # configure logger
 logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', level=logging.INFO)
-_logger = logging.getLogger('SpliceAI')
+_logger = logging.getLogger('SpliceAI-parser')
 
 # change following parameters accordingly
 SOURCE_NAME = 'splice_ai'   # source name that appears in the api response
 FILENAME = 'whole_genome_filtered_spliceai_scores.vcf'   # name of the file to read
 DELIMITER = '\t'    # the delimiter that separates each field
+
+
+def version(self) -> str:
+    """
+    This info will be shown in the API response under `version` field
+    :return:
+    """
+    return 'v1'
 
 
 def _inspect_file(filename: str) -> int:
