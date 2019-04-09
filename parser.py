@@ -20,7 +20,7 @@ def version(self) -> str:
     This info will be shown in the API response under `version` field
     :return:
     """
-    return 'v1'
+    return 'v1.0'
 
 
 def _inspect_file(filename: str) -> int:
